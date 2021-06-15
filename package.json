@@ -1,0 +1,94 @@
+{
+  "name": "lab-management-mobile-v3",
+  "version": "3.0.0",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.15.5",
+    "@react-native-community/cameraroll": "^4.0.4",
+    "@react-native-community/masked-view": "^0.1.11",
+    "@react-native-google-signin/google-signin": "^6.0.0",
+    "@react-native-picker/picker": "^1.16.1",
+    "@react-navigation/bottom-tabs": "^5.11.11",
+    "@react-navigation/native": "^5.9.4",
+    "@react-navigation/stack": "^5.14.5",
+    "@reduxjs/toolkit": "^1.5.1",
+    "@types/lodash": "^4.14.170",
+    "@types/react-native-table-component": "^1.2.0",
+    "@types/react-native-vector-icons": "^6.4.6",
+    "@types/react-native-video": "^5.0.5",
+    "axios": "^0.21.1",
+    "geolib": "^3.3.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "native-base": "^2.15.2",
+    "react": "17.0.1",
+    "react-native": "0.64.1",
+    "react-native-camera": "^3.44.0",
+    "react-native-collapsible": "^1.6.0",
+    "react-native-geolocation-service": "^5.3.0-beta.1",
+    "react-native-gesture-handler": "^1.10.3",
+    "react-native-map-link": "^2.7.27",
+    "react-native-maps": "^0.28.0",
+    "react-native-permissions": "^3.0.4",
+    "react-native-reanimated": "^2.2.0",
+    "react-native-redash": "^16.0.11",
+    "react-native-safe-area-context": "^3.2.0",
+    "react-native-screens": "^3.3.0",
+    "react-native-table-component": "^1.2.1",
+    "react-native-toast-message": "^1.4.9",
+    "react-native-vector-icons": "^7.1.0",
+    "react-native-video": "^5.1.1",
+    "react-navigation": "^4.4.4",
+    "react-navigation-stack": "^2.10.4",
+    "react-redux": "^7.2.4",
+    "rn-fetch-blob": "^0.12.0",
+    "rn-swipeable-panel": "^1.2.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.9",
+    "@babel/runtime": "^7.12.5",
+    "@react-native-community/eslint-config": "^2.0.0",
+    "@types/jest": "^26.0.23",
+    "@types/react-native": "^0.64.5",
+    "@types/react-test-renderer": "^16.9.2",
+    "babel-jest": "^26.6.3",
+    "eslint": "^7.14.0",
+    "jest": "^26.6.3",
+    "metro-react-native-babel-preset": "^0.64.0",
+    "react-test-renderer": "17.0.1",
+    "typescript": "^3.8.3"
+  },
+  "resolutions": {
+    "@types/react": "^17"
+  },
+  "jest": {
+    "preset": "react-native",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "description": "Migrate to TypeScript and React Native CLI",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peterburgs/lab-management-v3.git"
+  },
+  "author": "Peter Burgs",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/peterburgs/lab-management-v3/issues"
+  },
+  "homepage": "https://github.com/peterburgs/lab-management-v3#readme"
+}
