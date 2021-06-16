@@ -1,15 +1,14 @@
 import React, {useEffect} from 'react';
-import {StyleSheet, Text, View, Image, Dimensions} from 'react-native';
+import {StyleSheet, View, Image, Dimensions} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ROLES} from '../models';
 import {LoginScreenNavigationProp, LoginScreenRouteProp} from '../types';
 import {useAppDispatch} from '../redux/store';
 import {verify} from '../redux/reducers/authSlice';
-import {current, unwrapResult} from '@reduxjs/toolkit';
+import {unwrapResult} from '@reduxjs/toolkit';
 import Toast from 'react-native-toast-message';
-import {Spinner} from 'native-base';
 
-const {width, height, scale} = Dimensions.get('screen');
+const {height} = Dimensions.get('screen');
 
 // Custom type
 type Props = {

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useRef, useCallback} from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,10 +9,12 @@ import {
   Image,
   LogBox,
   ActivityIndicator,
+  BackHandler,
 } from 'react-native';
 import Video from 'react-native-video';
 import Toast from 'react-native-toast-message';
 import {ROLES} from '../models';
+import {useFocusEffect} from '@react-navigation/native';
 
 // Google SignIn services
 import {
@@ -48,8 +50,32 @@ const LoginScreen = (props: Props) => {
 
   // useState
   const [loading, setLoading] = useState(false);
+  const exitApp = useRef(0);
 
   // Event Handling
+
+  // Back action
+  const backAction = () => {
+    setTimeout(() => {
+      exitApp.current = 0;
+    }, 2000);
+    if (exitApp.current === 0) {
+      exitApp.current = 1;
+      Toast.show({
+        type: 'error',
+        text1: 'Press back one more time to exit app',
+        autoHide: true,
+        topOffset: 80,
+        bottomOffset: height / 4,
+        position: 'bottom',
+        visibilityTime: 1000,
+      });
+    } else if (exitApp.current === 1) {
+      BackHandler.exitApp();
+    }
+    console.log(exitApp);
+    return true;
+  };
   const signIn = async () => {
     try {
       setLoading(true);
@@ -105,7 +131,7 @@ const LoginScreen = (props: Props) => {
       } else {
         Toast.show({
           type: 'error',
-          text1: `Connection timeout. Please try again ❌`,
+          text1: `${error.message} ❌`,
           autoHide: true,
           topOffset: 80,
           bottomOffset: height / 4,
@@ -118,10 +144,18 @@ const LoginScreen = (props: Props) => {
 
   // useEffect
 
-  // Init SignIn
-  // useEffect(() => {
-
-  // }, []);
+  // Back handler
+  useFocusEffect(
+    useCallback(() => {
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction,
+      );
+      return () => {
+        backHandler.remove();
+      };
+    }, []),
+  );
 
   // JSX
   return (

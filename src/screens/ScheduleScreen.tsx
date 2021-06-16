@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   StyleSheet,
   View,
@@ -8,22 +8,23 @@ import {
   Image,
   Pressable,
   PermissionsAndroid,
+  Alert,
+  BackHandler,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import {SafeAreaView} from 'react-navigation';
-import {ScheduleScreenNavigationProp, ScheduleScreenRouteProp} from '../types';
 import {Text, Icon, H1, H2} from 'native-base';
 import {Table, Row, Cell, TableWrapper} from 'react-native-table-component';
 import {SwipeablePanel} from 'rn-swipeable-panel';
 import moment from 'moment';
-
+import ToastMessage from 'react-native-toast-message';
+import {useFocusEffect} from '@react-navigation/native';
 import {NavigationStackScreenProps} from 'react-navigation-stack';
 
 // Import components
 import CellItem from '../../src/components/CellItem';
 import EmptySchedule from '../components/EmptySchedule';
 import Loading from '../components/Loading';
-import AttendanceScreen from './AttendanceScreen';
 // Redux
 import {useAppDispatch, useAppSelector} from '../redux/store';
 import {
@@ -41,7 +42,6 @@ import {
 import {unwrapResult} from '@reduxjs/toolkit';
 import {LabUsage} from '../models';
 import Usage from '../components/Usage';
-import {endsWith} from 'lodash';
 const {width, height, fontScale, scale} = Dimensions.get('screen');
 type Params = {};
 type ScreenProps = {};
@@ -65,7 +65,7 @@ const ScheduleScreen = (
   const [tableData, setTableData] = useState<LabUsage[][][]>([]);
   const [tableTitle, setTableTitle] = useState<string[][]>([]);
   const [isPanelActive, setIsPanelActive] = useState(false);
-
+  const exitApp = useRef(0);
   const [panelProps, setPanelProps] = useState({
     fullWidth: true,
     closeOnTouchOutside: true,
@@ -73,7 +73,6 @@ const ScheduleScreen = (
     onClose: () => closePanel(),
     onPressCloseButton: () => closePanel(),
   });
-
   const dispatch = useAppDispatch();
   const selectedWeek = useAppSelector(state => state.schedule.selectedWeek);
   const academicYear = useAppSelector(state => state.schedule.academicYear);
@@ -122,6 +121,28 @@ const ScheduleScreen = (
   const leftColumnWidth = 100;
 
   // Event handling
+
+  // Back action
+  const backAction = () => {
+    setTimeout(() => {
+      exitApp.current = 0;
+    }, 2000);
+    if (exitApp.current === 0) {
+      exitApp.current = 1;
+      ToastMessage.show({
+        type: 'error',
+        text1: 'Press back one more time to exit app',
+        autoHide: true,
+        topOffset: 80,
+        bottomOffset: height / 4,
+        position: 'bottom',
+        visibilityTime: 1000,
+      });
+    } else if (exitApp.current === 1) {
+      BackHandler.exitApp();
+    }
+    return true;
+  };
   const handleWeekChange = (week: number) => {
     dispatch(setSelectedWeek(week));
     dispatch(setLoadingSchedule(true));
@@ -160,7 +181,7 @@ const ScheduleScreen = (
       setIsPanelActive(false);
       props.navigation.navigate('Attendance');
     } else {
-      alert('Please allow Lab Management to access your location');
+      Alert.alert('Please allow Lab Management to access your location');
       setIsPanelActive(false);
     }
   };
@@ -172,7 +193,7 @@ const ScheduleScreen = (
       setIsPanelActive(false);
       props.navigation.navigate('Attendance');
     } else {
-      alert('Please allow Lab Management to access your location');
+      Alert.alert('Please allow Lab Management to access your location');
       setIsPanelActive(false);
     }
   };
@@ -232,6 +253,20 @@ const ScheduleScreen = (
   };
 
   // useEffect
+
+  // Back handler
+  useFocusEffect(
+    useCallback(() => {
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction,
+      );
+      return () => {
+        backHandler.remove();
+      };
+    }, []),
+  );
+
   useEffect(() => {
     const _tableTitle: string[][] = [];
     for (let i = 0; i < labs.length; i += 1) {

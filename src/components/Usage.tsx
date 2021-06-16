@@ -47,8 +47,19 @@ const Usage = (props: UsageProps) => {
   const user = useAppSelector(state => state.auth.verifiedUser);
   const semester = useAppSelector(state => state.schedule.semester);
   // Event Handling
-  const getCurrentWeekNo = () => {
-    return moment(new Date(semester!.startDate!)).week;
+  const isMatchedWeekNoAndDayOfWeek = () => {
+    // return moment(new Date(semester!.startDate!)).week;
+    const usageTime = moment(new Date(semester?.startDate!))
+      .add(props.weekNo, 'weeks')
+      .add(props.dayOfWeek, 'day');
+
+    if (
+      usageTime.diff(moment(new Date()), 'week') === 0 &&
+      usageTime.diff(moment(new Date()), 'day') === 0
+    ) {
+      return false;
+    }
+    return true;
   };
   const convertPeriodToShift = (startPeriod: number, endPeriod: number) => {
     if (startPeriod >= 1 && endPeriod <= 5) {
@@ -97,7 +108,7 @@ const Usage = (props: UsageProps) => {
       {props.isEmpty ? (
         <View style={styles.empty}></View>
       ) : user?._id === props.lecturerId ? (
-        <Pressable {...onLongPress}>
+        <Pressable {...onLongPress} disabled={isMatchedWeekNoAndDayOfWeek()}>
           <Text style={{fontSize: 16, fontWeight: 'bold'}}>
             {props.courseName}
           </Text>

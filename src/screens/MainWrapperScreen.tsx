@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, View, Dimensions} from 'react-native';
+import React, {useEffect} from 'react';
+import {StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -7,11 +7,9 @@ import 'react-native-gesture-handler';
 import {LogBox} from 'react-native';
 LogBox.ignoreAllLogs(true);
 // Device specs
-const {width, height} = Dimensions.get('screen');
 
 // Redux
-import {store, useAppSelector, useAppDispatch} from '../../src/redux/store';
-import {Provider} from 'react-redux';
+import {useAppSelector, useAppDispatch} from '../../src/redux/store';
 
 // Import Screens
 import LoginScreen from '../../src/screens/LoginScreen';
@@ -63,7 +61,6 @@ const MainWrapperScreen = () => {
             options={{headerShown: false}}
           />
         </Stack.Navigator>
-        <Toast ref={ref => Toast.setRef(ref)} />
       </NavigationContainer>
     </>
   );

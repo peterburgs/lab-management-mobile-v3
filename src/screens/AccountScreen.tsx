@@ -40,9 +40,9 @@ const AccountScreen = (
   const user = useAppSelector(state =>
     state.user.user ? state.user.user : null,
   );
-  const userSchedule = useAppSelector(state =>
-    state.schedule.users ? state.schedule.users : null,
-  );
+  // const userSchedule = useAppSelector(state =>
+  //   state.schedule.users ? state.schedule.users : null,
+  // );
 
   // Events handling
 
@@ -231,9 +231,7 @@ const AccountScreen = (
               <Text style={styles.note}>
                 Add more faces to increase the accuracy of Face ID
               </Text>
-            ) : (
-              <Text style={styles.note}>You must verify first</Text>
-            )
+            ) : null
           ) : null}
           {/* Swipeable Panel */}
           <SwipeablePanel
@@ -405,7 +403,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#0070F3',
   },
   panel: {
-    // position: 'absolute',
     flexDirection: 'column',
     paddingHorizontal: 10,
     alignItems: 'center',

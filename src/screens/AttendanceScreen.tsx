@@ -1,11 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
-  Text,
   View,
   Dimensions,
   TouchableOpacity,
-  ActivityIndicator,
   PermissionsAndroid,
 } from 'react-native';
 import {
@@ -13,11 +11,9 @@ import {
   Header,
   Left,
   Body,
-  Right,
   Title,
   Icon,
   Button,
-  Subtitle,
   Spinner,
 } from 'native-base';
 import {NavigationStackScreenProps} from 'react-navigation-stack';
@@ -26,31 +22,27 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {auth} from '../api';
 import VerificationStatus from '../components/VerificationStatus';
 import AttendanceComplete from '../components/AttendanceComplete';
-import {FACE_ID_SERVER, LAT1, LONG1, LAT2, LONG2, R1, R2} from '../utils/env';
-import axios from 'axios';
+import {FACE_ID_SERVER, LAT1, LONG1, LAT2, LONG2} from '../utils/env';
 import ToastMessage from 'react-native-toast-message';
 import {useAppDispatch, useAppSelector} from '../redux/store';
 import _ from 'lodash';
-import {User} from '../models';
 import {unwrapResult} from '@reduxjs/toolkit';
 import {updateLabUsageById} from '../redux/reducers/scheduleSlice';
 import {getDistance} from 'geolib';
 import Geolocation from 'react-native-geolocation-service';
-import {SwipeablePanel} from 'rn-swipeable-panel';
 import Outside from '../components/Outside';
 // Props
 type Params = {};
 type ScreenProps = {};
 
 // Device specs
-const {width, height, scale} = Dimensions.get('screen');
+const {width, height} = Dimensions.get('screen');
 
 // Screen
 const AttendanceScreen = (
   props: NavigationStackScreenProps<Params, ScreenProps>,
 ) => {
   const isCheckingIn = useAppSelector(state => state.schedule.isCheckingIn);
-  const user = useAppSelector(state => state.user.user);
   const labUsages = useAppSelector(state => state.schedule.labUsages);
   const labUsageToCheckIn = useAppSelector(
     state => state.schedule.labUsageToCheckIn,
@@ -58,7 +50,6 @@ const AttendanceScreen = (
   const labUsageToCheckOut = useAppSelector(
     state => state.schedule.labUsageToCheckOut,
   );
-  const userStatus = useAppSelector(state => state.user.status);
   const dispatch = useAppDispatch();
 
   // useState
@@ -86,17 +77,7 @@ const AttendanceScreen = (
       visibilityTime: 1000,
     });
   };
-  const showErrorSlow = (error: string) => {
-    ToastMessage.show({
-      type: 'error',
-      text1: error,
-      autoHide: true,
-      topOffset: 80,
-      bottomOffset: height / 4,
-      position: 'bottom',
-      visibilityTime: 2000,
-    });
-  };
+
   // Take picture and save
   const takePicture = async function (camera: RNCamera) {
     try {
@@ -131,100 +112,98 @@ const AttendanceScreen = (
           // Origin condition
           // if (d1 <= R1 || d2 <= R2) {
           // TODO: restore to origin after test
-          // Supposing considion
-          if (d1 > R1 || d2 > R2) {
-            // Config Fetch Blob
-            await RNFetchBlob.config({
-              timeout: 30000,
+
+          // Config Fetch Blob
+          await RNFetchBlob.config({
+            timeout: 30000,
+          })
+            .fetch(
+              'POST',
+              `${FACE_ID_SERVER}/verify`,
+              {
+                Authorization: token.Authorization,
+                'Content-Type': 'multipart/form-data',
+              },
+              [{name: 'image', filename: 'image.png', data: data.base64}],
+            )
+            .then(res => {
+              return res.json();
             })
-              .fetch(
-                'POST',
-                `${FACE_ID_SERVER}/verify`,
-                {
-                  Authorization: token.Authorization,
-                  'Content-Type': 'multipart/form-data',
-                },
-                [{name: 'image', filename: 'image.png', data: data.base64}],
-              )
-              .then(res => {
-                return res.json();
-              })
-              .then(async resolvedRes => {
-                // Check In/Out successfully
-                if (resolvedRes.status === 200) {
-                  // If Check In successfully
-                  if (isCheckingIn) {
-                    let labUsage = _.cloneDeep(
-                      labUsages.filter(
-                        item => item._id === labUsageToCheckIn,
-                      )[0],
-                    );
-                    labUsage.checkInAt = new Date();
-                    try {
-                      const res = await dispatch(updateLabUsageById(labUsage));
-                      unwrapResult(res);
-                      setIsProcessing(false);
-                      setLoading(false);
-                      setIsAttendanceCompleteActive(true);
-                      setTimeout(() => {
-                        props.navigation.navigate('Schedule');
-                      }, 1500);
-                    } catch (error) {
-                      console.log(error.message);
-                      setIsProcessing(false);
-                      setLoading(false);
-                    }
+            .then(async resolvedRes => {
+              // Check In/Out successfully
+              if (resolvedRes.status === 200) {
+                // If Check In successfully
+                if (isCheckingIn) {
+                  let labUsage = _.cloneDeep(
+                    labUsages.filter(item => item._id === labUsageToCheckIn)[0],
+                  );
+                  labUsage.checkInAt = new Date();
+                  try {
+                    const res = await dispatch(updateLabUsageById(labUsage));
+                    unwrapResult(res);
+                    setIsProcessing(false);
+                    setLoading(false);
+                    setIsAttendanceCompleteActive(true);
+                    setTimeout(() => {
+                      props.navigation.navigate('Schedule');
+                    }, 1500);
+                  } catch (error) {
+                    console.log(error.message);
+                    setIsProcessing(false);
+                    setLoading(false);
                   }
-                  // If Check Out successfully
-                  else {
-                    let labUsage = _.cloneDeep(
-                      labUsages.filter(
-                        item => item._id === labUsageToCheckOut,
-                      )[0],
-                    );
-                    labUsage.checkOutAt = new Date();
-                    try {
-                      const res = await dispatch(updateLabUsageById(labUsage));
-                      unwrapResult(res);
-                      setIsAttendanceCompleteActive(true);
-                      setLoading(false);
-                      setIsProcessing(false);
-                      setTimeout(() => {
-                        props.navigation.navigate('Schedule');
-                      }, 1500);
-                    } catch (error) {
-                      console.log(error.message);
-                    }
-                  }
-                } else if (resolvedRes.status === 400) {
-                  setIsProcessing(false);
-                  setLoading(false);
-                  showError('Cannot detect your face');
-                } else if (resolvedRes.status === 500) {
-                  setIsProcessing(false);
-                  setLoading(false);
-                  showError(resolvedRes.message);
-                } else if (resolvedRes.status === 401) {
-                  setIsProcessing(false);
-                  setLoading(false);
-                  showError('Wrong Face ID');
-                } else {
-                  setIsProcessing(false);
-                  setLoading(false);
-                  showError('Server error. Please try again');
                 }
-              })
-              .catch(err => {
-                console.log(err.message);
-                showError('Server error. Please try again');
+                // If Check Out successfully
+                else {
+                  let labUsage = _.cloneDeep(
+                    labUsages.filter(
+                      item => item._id === labUsageToCheckOut,
+                    )[0],
+                  );
+                  labUsage.checkOutAt = new Date();
+                  try {
+                    const res = await dispatch(updateLabUsageById(labUsage));
+                    unwrapResult(res);
+                    setIsAttendanceCompleteActive(true);
+                    setLoading(false);
+                    setIsProcessing(false);
+                    setTimeout(() => {
+                      props.navigation.navigate('Schedule');
+                    }, 1500);
+                  } catch (error) {
+                    console.log(error.message);
+                  }
+                }
+              } else if (resolvedRes.status === 400) {
                 setIsProcessing(false);
                 setLoading(false);
-              });
-          } else {
-            setIsOutside(true);
-            setLoading(false);
-            setIsProcessing(false);
-          }
+                showError('Cannot detect your face');
+              } else if (resolvedRes.status === 500) {
+                setIsProcessing(false);
+                setLoading(false);
+                showError(resolvedRes.message);
+              } else if (resolvedRes.status === 401) {
+                setIsProcessing(false);
+                setLoading(false);
+                showError('Wrong Face ID');
+              } else {
+                setIsProcessing(false);
+                setLoading(false);
+                showError('Server error. Please try again');
+              }
+            })
+            .catch(err => {
+              console.log(err.message);
+              showError('Server error. Please try again');
+              setIsProcessing(false);
+              setLoading(false);
+            });
+          // } else {
+          //   setIsOutside(true);
+          //   setLoading(false);
+          //   setIsProcessing(false);
+          // }
+          // TODO: Uncomment this block when release
         },
         error => {
           console.log(error.code, error.message);
