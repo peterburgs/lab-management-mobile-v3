@@ -12,14 +12,14 @@ import {
 const {width, height, scale, fontScale} = Dimensions.get('screen');
 
 export const BORDER_COLOR = {
-  shift1: '#fe3f71',
-  shift2: '#4a89a2',
-  shift3: '#6537c0',
+  shift1: '#810000',
+  shift2: '#02383C',
+  shift3: '#0900C3',
 };
 export const BACKGROUND_COLOR = {
-  shift1: '#ffe5ec',
-  shift2: '#D7F2FF',
-  shift3: '#EEEAF7',
+  shift1: '#C70039',
+  shift2: '#16C79A',
+  shift3: '#0075F6',
 };
 export interface UsageProps {
   startPeriod?: number;
@@ -109,29 +109,27 @@ const Usage = (props: UsageProps) => {
         <View style={styles.empty}></View>
       ) : user?._id === props.lecturerId ? (
         <Pressable {...onLongPress} disabled={isMatchedWeekNoAndDayOfWeek()}>
-          <Text style={{fontSize: 16, fontWeight: 'bold'}}>
+          <Text style={{fontSize: 16, fontWeight: 'bold', color: '#fff'}}>
             {props.courseName}
           </Text>
-          <Text style={{fontWeight: 'bold', color: '#343a40'}}>
-            {props.lecturerName}
-          </Text>
+          <Text style={{color: '#fff'}}>{props.lecturerName}</Text>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={{fontWeight: 'bold', color: '#343a40'}}>
+            <Text style={{fontWeight: 'bold', color: '#fff'}}>
               Period:&nbsp;
             </Text>
-            <Text>{props.startPeriod}</Text>
+            <Text style={{color: '#fff'}}> {props.startPeriod}</Text>
             <Icon
               type={'MaterialIcons'}
               name={'arrow-right'}
-              style={{fontSize: fontScale * 20, color: 'red'}}
+              style={{fontSize: fontScale * 20, color: '#FCD307'}}
             />
-            <Text>&nbsp;{props.endPeriod}</Text>
+            <Text style={{color: '#fff'}}>&nbsp;{props.endPeriod}</Text>
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={{fontWeight: 'bold', color: '#343a40'}}>
+            <Text style={{fontWeight: 'bold', color: '#fff'}}>
               Check in:&nbsp;
             </Text>
-            <Text>
+            <Text style={{color: '#fff'}}>
               {props.checkInAt
                 ? moment(new Date(props.checkInAt)).format(
                     'HH:mm:ss DD/MM/YYYY',
@@ -140,17 +138,17 @@ const Usage = (props: UsageProps) => {
             </Text>
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={{fontWeight: 'bold', color: '#343a40'}}>
+            <Text style={{fontWeight: 'bold', color: '#fff'}}>
               Check out:&nbsp;
             </Text>
-            <Text>
+            <Text style={{color: '#fff'}}>
               {props.checkInAt
                 ? props.checkOutAt
                   ? moment(new Date(props.checkOutAt)).format(
                       'HH:mm:ss DD/MM/YYYY',
                     )
                   : 'Pending'
-                : 'Check In required'}
+                : 'Pending'}
             </Text>
           </View>
         </Pressable>
@@ -179,7 +177,9 @@ const Usage = (props: UsageProps) => {
                   : BORDER_COLOR.shift3,
             },
           ]}>
-          <Text style={{fontSize: 16, fontWeight: 'bold'}}>Occupied</Text>
+          <Text style={{fontSize: 16, fontWeight: 'bold', color: '#fff'}}>
+            Occupied
+          </Text>
         </View>
       )}
     </View>
@@ -190,10 +190,13 @@ export default Usage;
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 3,
-    height: height * 0.12,
+    minHeight: height * 0.15,
+    maxHeight: height * 0.2,
+    marginVertical: 2,
   },
   normalButton: {
+    minHeight: height * 0.15,
+    maxHeight: height * 0.2,
     borderLeftWidth: 3,
     borderTopWidth: 0,
     borderRightWidth: 0,
@@ -202,8 +205,11 @@ const styles = StyleSheet.create({
     transform: [{scale: 1}],
     paddingVertical: 5,
     paddingHorizontal: 5,
+    color: '#fff',
   },
   pressedButton: {
+    minHeight: height * 0.15,
+    maxHeight: height * 0.2,
     borderLeftWidth: 3,
     borderTopWidth: 0,
     borderRightWidth: 0,
@@ -220,6 +226,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   occupied: {
+    minHeight: height * 0.15,
+    maxHeight: height * 0.2,
     borderLeftWidth: 3,
     borderTopWidth: 0,
     borderRightWidth: 0,

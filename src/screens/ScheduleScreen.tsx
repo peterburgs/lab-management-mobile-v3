@@ -48,8 +48,8 @@ type ScreenProps = {};
 
 // Attributes for table
 const borderColor = '#838383';
-const ROW_HEIGHT = height * 0.05;
-const USAGE_HEIGHT = height * 0.115;
+const ROW_HEIGHT = height * 0.03;
+const USAGE_HEIGHT = height * 0.15;
 const HEADER_HEIGHT = height * 0.04;
 
 // Import Model
@@ -82,6 +82,7 @@ const ScheduleScreen = (
   const teachings = useAppSelector(state => state.schedule.teachings);
   const labs = useAppSelector(state => state.schedule.labs);
   const courses = useAppSelector(state => state.schedule.courses);
+  const user = useAppSelector(state => state.user.user);
   const labUsageToCheckIn = useAppSelector(
     state => state.schedule.labUsageToCheckIn,
   );
@@ -644,11 +645,14 @@ const ScheduleScreen = (
                 },
               ]}
               disabled={
-                labUsageToCheckIn
-                  ? labUsages.filter(item => item._id === labUsageToCheckIn)[0]
-                      .checkInAt
-                    ? true
-                    : false
+                user?.isFaceIdVerified
+                  ? labUsageToCheckIn
+                    ? labUsages.filter(
+                        item => item._id === labUsageToCheckIn,
+                      )[0].checkInAt
+                      ? true
+                      : false
+                    : true
                   : true
               }
               onPress={() => checkInHandler()}>
@@ -663,19 +667,21 @@ const ScheduleScreen = (
                   style={{fontSize: 25, color: '#fff', marginRight: 5}}
                 />
                 <Text style={{color: '#fff'}}>
-                  {labUsageToCheckIn
-                    ? labUsages.filter(
-                        item => item._id === labUsageToCheckIn,
-                      )[0].checkInAt
-                      ? `Checked in at ${moment(
-                          new Date(
-                            labUsages.filter(
-                              item => item._id === labUsageToCheckIn,
-                            )[0].checkInAt!,
-                          ),
-                        ).format('HH:mm:ss DD/MM/YYYY')}`
+                  {user?.isFaceIdVerified
+                    ? labUsageToCheckIn
+                      ? labUsages.filter(
+                          item => item._id === labUsageToCheckIn,
+                        )[0].checkInAt
+                        ? `Checked in at ${moment(
+                            new Date(
+                              labUsages.filter(
+                                item => item._id === labUsageToCheckIn,
+                              )[0].checkInAt!,
+                            ),
+                          ).format('HH:mm:ss DD/MM/YYYY')}`
+                        : 'Check in now'
                       : 'Check in now'
-                    : 'Check in now'}
+                    : 'Face ID is not verified'}
                 </Text>
               </View>
             </Pressable>
@@ -683,11 +689,14 @@ const ScheduleScreen = (
             <Pressable
               android_ripple={{color: 'black', borderless: true, radius: 10}}
               disabled={
-                labUsageToCheckOut
-                  ? labUsages.filter(item => item._id === labUsageToCheckOut)[0]
-                      .checkOutAt
-                    ? true
-                    : false
+                user?.isFaceIdVerified
+                  ? labUsageToCheckOut
+                    ? labUsages.filter(
+                        item => item._id === labUsageToCheckOut,
+                      )[0].checkOutAt
+                      ? true
+                      : false
+                    : true
                   : true
               }
               style={[
@@ -714,19 +723,21 @@ const ScheduleScreen = (
                   style={{fontSize: 25, color: '#fff', marginRight: 5}}
                 />
                 <Text style={{color: '#fff'}}>
-                  {labUsageToCheckOut
-                    ? labUsages.filter(
-                        item => item._id === labUsageToCheckOut,
-                      )[0].checkOutAt
-                      ? `Checked out at ${moment(
-                          new Date(
-                            labUsages.filter(
-                              item => item._id === labUsageToCheckOut,
-                            )[0].checkOutAt!,
-                          ),
-                        ).format('HH:mm:ss DD/MM/YYYY')}`
+                  {user?.isFaceIdVerified
+                    ? labUsageToCheckOut
+                      ? labUsages.filter(
+                          item => item._id === labUsageToCheckOut,
+                        )[0].checkOutAt
+                        ? `Checked out at ${moment(
+                            new Date(
+                              labUsages.filter(
+                                item => item._id === labUsageToCheckOut,
+                              )[0].checkOutAt!,
+                            ),
+                          ).format('HH:mm:ss DD/MM/YYYY')}`
+                        : 'Check out now'
                       : 'Check out now'
-                    : 'Check out now'}
+                    : 'Face ID is not verified'}
                 </Text>
               </View>
             </Pressable>
@@ -835,6 +846,7 @@ const styles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   tableText: {
     color: '#407088',
